@@ -1,6 +1,8 @@
 export interface MarkerInfo {
-    id: number,
+    id: string,
+    title?: string,
+    description?: string,
     latitude: number,
     longitude: number,
-    images? : string[],
+    images : string[],
 }

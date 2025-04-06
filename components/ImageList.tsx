@@ -1,18 +1,15 @@
 import { FlatList, View, Button, Image } from "react-native"
 import { launchImageLibraryAsync} from 'expo-image-picker';
-import { useMarkerImages } from "../context/MarkerContext";
+import { MarkerInfo } from "../constrains/types";
+import { useMarkers } from "../context/MarkerContext";
 
 export type ImageListProps = {
-  marker: {
-    id: string,
-    latitude: string,
-    longitude: string,
-  }
+  marker: MarkerInfo,
 }
 
 export const ImageList : React.FC<ImageListProps> = ({marker}) => {
 
-    const { markerImages, addImages, removeImage } = useMarkerImages();
+    const { updateMarker } = useMarkers();
 
     const pickImages = async () => {
       const result = await launchImageLibraryAsync({
@@ -23,21 +20,31 @@ export const ImageList : React.FC<ImageListProps> = ({marker}) => {
   
       if (!result.canceled) {
         const newImages = result.assets.map(img => img.uri)
-        addImages(marker.id, newImages);
+        updateMarker({
+          ...marker,
+          images: [...marker.images, ...newImages]
+        })
       }
     } 
+    const removeImage = (imageUri: string) => {
+      const updatedImages = marker.images.filter((uri) => uri !== imageUri);
+      updateMarker({
+        ...marker,
+        images: updatedImages,
+      });
+    }
 
     return (
       <>
       <Button title="Add Images" onPress={pickImages} />
       <FlatList
-      data={markerImages[marker.id] || []}
-      keyExtractor={(item) => item}
+      data={marker.images}
+      keyExtractor={(imageUri) => imageUri}
       numColumns={2}
       renderItem={({ item }) => (
         <View style={{ width: '50%', padding: 10}}>
           <Image source={{ uri: item }} style={{ minWidth: 150, minHeight: 150, borderRadius: 20, margin: 5 }}/>
-          <Button title="❌" onPress={() => removeImage(marker.id, item)}/>
+          <Button title="❌" onPress={() => removeImage(item)}/>
         </View>
       )}
       />

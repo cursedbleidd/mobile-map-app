@@ -14,15 +14,18 @@
     "expo-linking": "^7.0.5",
     "expo-location": "^18.0.7",
     "expo-router": "^4.0.17",
+    "expo-sqlite": "^15.1.4",
     "expo-status-bar": "~2.0.1",
     "react": "18.3.1",
     "react-native": "0.76.7",
     "react-native-maps": "^1.20.1",
     "react-native-safe-area-context": "^5.2.0",
-    "react-native-screens": "^4.9.1"
+    "react-native-screens": "^4.9.1",
+    "uuidv4": "^6.2.13"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
+    "@types/better-sqlite3": "^7.6.13",
     "@types/react": "~18.3.12",
     "typescript": "^5.3.3"
   },

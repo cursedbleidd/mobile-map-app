@@ -4,11 +4,13 @@ import { LocationObject, requestForegroundPermissionsAsync, getCurrentPositionAs
 import MapView from "react-native-maps";
 import { MarkerList } from "./MarkerList";
 import { MarkerInfo } from "../constrains/types";
+import { useMarkers } from "../context/MarkerContext";
+import { v4 as uuidv4 } from 'uuid';
 
 export const MapComponent: React.FC = () => {
   const [location, setLocation] = useState<LocationObject | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [markers, setMarkers] = useState<MarkerInfo[]>([]);
+  const {markers, addMarker} = useMarkers();
 
   useEffect(() => {
     (async () => {
@@ -33,11 +35,12 @@ export const MapComponent: React.FC = () => {
   
   const handleMapPress = (event: any) => {
     const newMarker = {
-      id: markers.length,
+      id: markers.length.toString(),
       latitude: event.nativeEvent.coordinate.latitude,
       longitude: event.nativeEvent.coordinate.longitude,
-    }
-    setMarkers([...markers, newMarker]);
+      images: [],
+    } as MarkerInfo;
+    addMarker(newMarker);
   }
 
   return (
@@ -50,6 +53,8 @@ export const MapComponent: React.FC = () => {
         longitudeDelta: 0.01,
       }}
       onPress={handleMapPress}
+      followsUserLocation={true}
+      showsUserLocation={true}
     >
       <MarkerList markers={markers}/>
     </MapView>

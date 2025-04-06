@@ -15,14 +15,12 @@ export const MarkerList : React.FC<MarkerListProps> = ({markers}) => {
                 <Marker
                     key={markerinfo.id}
                     coordinate={{latitude: markerinfo.latitude, longitude: markerinfo.longitude}}
-                    title={`Marker ${markerinfo.id}`}
+                    title={markerinfo.title}
                     onPress={() =>
                         router.push({
                           pathname: `/marker/[id]`,
                           params: {
                             id: markerinfo.id.toString(),
-                            latitude: markerinfo.latitude.toString(),
-                            longitude: markerinfo.longitude.toString(),
                           },
                         })
                       }/>

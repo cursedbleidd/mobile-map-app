@@ -3,14 +3,14 @@ import { ImageList } from "../components/ImageList";
 import { useMarkers } from "../context/MarkerContext";
 import { ActivityIndicator } from "react-native";
 import { useState } from "react";
-import { MarkerInfo } from "../constrains/types";
+import { MarkerInfo } from "../types";
 
 type MarkerCardProps = {
     id: string;
 }
 
 const MarkerCard : React.FC<MarkerCardProps> = ({ id }) => {
-  const { markers, updateMarker} = useMarkers();
+  const { markers, updateMarker } = useMarkers();
   const marker = markers.find((marker) => marker.id === id);
 
   const textChanged = (text: string, field: 'title' | 'description') => {

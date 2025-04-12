@@ -1,35 +1,79 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Text, ActivityIndicator } from "react-native";
-import { LocationObject, requestForegroundPermissionsAsync, getCurrentPositionAsync } from "expo-location";
+
 import MapView from "react-native-maps";
 import { MarkerList } from "./MarkerList";
-import { MarkerInfo } from "../constrains/types";
+
+import { MarkerInfo } from "../types";
 import { useMarkers } from "../context/MarkerContext";
-import { v4 as uuidv4 } from 'uuid';
+
+import { LocationObject, LocationSubscription } from "expo-location";
+import { LocationState, requestLocationPermissions, startLocationUpdates, calculateDistance } from "../services/location";
+
+import NotificationManager from "../services/notifications";
+import * as Notification from 'expo-notifications';
+
+
+const PROXIMITY_THRESHOLD = 50;
+const notificationManager = new NotificationManager();
 
 export const MapComponent: React.FC = () => {
-  const [location, setLocation] = useState<LocationObject | null>(null);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [locationState, setLocationState] = useState<LocationState>({location: null, errorMsg: null});
   const {markers, addMarker} = useMarkers();
-
+  
   useEffect(() => {
-    (async () => {
-      const { status } = await requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        setErrorMsg("Permission to access location was denied");
-        return;
+    const checkProximity = (
+      userLocation: LocationObject,
+      markers: MarkerInfo[]
+    ) => {
+      markers.forEach(marker => {
+        const distance = calculateDistance(
+          userLocation.coords.latitude,
+          userLocation.coords.longitude,
+          marker.latitude,
+          marker.longitude
+        );
+    
+        if (distance <= PROXIMITY_THRESHOLD) {
+          notificationManager.showNotification(marker);
+        } else {
+          notificationManager.removeNotification(marker.id);
+        }
+      });
+    };
+    let locationSubscription: LocationSubscription;
+
+    const onLocation = (location: LocationObject) => {
+      setLocationState({location: location, errorMsg: null})
+      checkProximity(location, markers);
+    }
+
+    const setupLocation = async () => {
+      try {
+        await requestLocationPermissions();
+        locationSubscription = await startLocationUpdates(onLocation);
+      } catch (error) {
+        setLocationState({
+          location: null,
+          errorMsg: error instanceof Error ? error.message : 'Unknown error'
+        })
       }
+    };
+  
+    setupLocation();
+  
+    return () => {
+      if (locationSubscription) {
+        locationSubscription.remove();
+      }
+    };
+  }, [markers]);
 
-      const loc = await getCurrentPositionAsync({});
-      setLocation(loc);
-    })();
-  }, []);
-
-  if (errorMsg) {
-    return <Text>{errorMsg}</Text>;
+  if (locationState.errorMsg) {
+    return <Text>{locationState.errorMsg}</Text>;
   }
 
-  if (!location) {
+  if (!locationState.location) {
     return <ActivityIndicator size="large" />;
   }
   
@@ -46,15 +90,13 @@ export const MapComponent: React.FC = () => {
   return (
     <MapView
       style={{ flex: 1 }}
-      initialRegion={{
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
+      region={{
+        ...locationState.location.coords,
         latitudeDelta: 0.01,
         longitudeDelta: 0.01,
       }}
       onPress={handleMapPress}
-      followsUserLocation={true}
-      showsUserLocation={true}
+      showsUserLocation
     >
       <MarkerList markers={markers}/>
     </MapView>

@@ -1,6 +1,6 @@
 import { FlatList, View, Button, Image } from "react-native"
 import { launchImageLibraryAsync} from 'expo-image-picker';
-import { MarkerInfo } from "../constrains/types";
+import { MarkerInfo } from "../types";
 import { useMarkers } from "../context/MarkerContext";
 
 export type ImageListProps = {

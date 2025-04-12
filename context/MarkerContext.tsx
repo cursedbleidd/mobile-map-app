@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import * as SQLite from 'expo-sqlite';
-import { MarkerInfo } from "../constrains/types";
+import { MarkerInfo } from "../types";
 
 type MarkerContextType = {
   markers: MarkerInfo[];
@@ -20,7 +20,12 @@ interface MarkerDb {
 
 const MarkerContext = createContext<MarkerContextType | undefined>(undefined);
 
-export const MarkerProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+type MarkerProviderProps = {
+  // callbackError: () => void | undefined,
+  children: React.ReactNode
+}
+
+export const MarkerProvider: React.FC<MarkerProviderProps> = ({ children }) => {
   const [markers, setMarkers] = useState<MarkerInfo[]>([]);
   const [db, setDb] = useState<SQLite.SQLiteDatabase | null>(null);
 

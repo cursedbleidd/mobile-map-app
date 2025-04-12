@@ -5,7 +5,7 @@ import { MapComponent } from '../components/MapComponent';
 const App : React.FC = () => {
   return (
     <View style={styles.container}>
-      <StatusBar style="auto" />
+      
       <MapComponent/>
     </View>
   );

@@ -1,5 +1,5 @@
 import { Marker } from "react-native-maps"
-import { MarkerInfo } from "../constrains/types"
+import { MarkerInfo } from "../types"
 import { useRouter } from "expo-router"
 
 export type MarkerListProps = {

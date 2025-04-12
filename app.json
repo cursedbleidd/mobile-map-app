@@ -13,6 +13,13 @@
         {
           "locationAlwaysAndWhenInUsePermission": "Allow the app to access your location."
         }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/favicon.png",
+          "color": "#ffffff"
+        }
       ]
     ],
     "splash": {

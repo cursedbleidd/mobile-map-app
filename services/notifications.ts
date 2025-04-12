@@ -20,7 +20,6 @@ export default class NotificationManager {
     if (this.activeNotifications.has(marker.id)) {
       return; // Предотвращаем дубликаты
     }
-    console.log(this.activeNotifications.keys());
     const notificationId = await Notification.scheduleNotificationAsync({
       content: {
         title: "Вы рядом с меткой !",
@@ -45,7 +44,7 @@ export default class NotificationManager {
     const notification = this.activeNotifications.get(markerId);
     if (notification) {
       try {
-        await Notification.cancelScheduledNotificationAsync(notification.notificationId);
+        await Notification.dismissNotificationAsync(notification.notificationId);
       }
       catch (error) {
         console.error('Error removing notification:', error);
